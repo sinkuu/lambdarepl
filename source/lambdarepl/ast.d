@@ -11,7 +11,7 @@ import std.range;
 
 abstract class Expression
 {
-    Expression dup()
+    Expression dup() const
     {
         assert(0);
     }
@@ -43,7 +43,7 @@ final class VarExpression : Expression
         return false;
     }
 
-    override Expression dup()
+    override Expression dup() const
     {
         return new VarExpression(name);
     }
@@ -104,7 +104,7 @@ final class AbstractExpression : Expression
         }
     }
 
-    override Expression dup()
+    override Expression dup() const
     {
         return new AbstractExpression(var, term.dup);
     }
@@ -156,7 +156,7 @@ final class ApplyExpression : Expression
             apps.data.retro.map!(a => a.input.toString()).join(' ') ~ ")";
     }
 
-    override Expression dup()
+    override Expression dup() const
     {
         return application(func.dup, input.dup);
     }
@@ -260,7 +260,7 @@ void replace(ref Expression lm, string from, Expression to, RedBlackTree!string 
             {
                 auto vars = ab.term.freeVariables;
                 string newv = SubstituteVariableNames()
-                    .filter!(i => i !in vars && i !in freevars).front;
+                    /+.cache+/.filter!(i => i !in vars && i !in freevars).front;
                 ab.term.replace(ab.var, new VarExpression(newv));
                 ab.var = newv;
             }
