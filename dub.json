@@ -1,8 +1,9 @@
 {
-	"name": "lambdarepl",
-	"description": "lambda toy",
-	"authors": ["sinkuu"],
-	"dependencies": {
-		"pegged": "~master"
-	}
+    "name": "lambdarepl",
+    "description": "lambda toy",
+    "authors": ["sinkuu"],
+    "dependencies": {
+        "pegged": "~master"
+    },
+    "license": "MIT"
 }
