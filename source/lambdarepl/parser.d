@@ -17,7 +17,7 @@ Lambda:
     Primary <- :space* ((:"(" Term :")") / Variable / Abstraction) :space*
     Abstraction <- ("\\"/"λ") Arguments "." Term
     Arguments <- (:space* Variable)+ :space*
-    Variable <- [A-Za-z][A-Za-z0-9_]*
+    Variable <~ [A-Za-z][A-Za-z0-9_]*
 `));
 
 }
@@ -66,6 +66,7 @@ private Expression convertTreeToAST(ParseTree node)
 
         case "Lambda.Abstraction":
             import std.algorithm : map, retro;
+            assert(node.children[0].name == "Lambda.Arguments");
             auto vars = node.children[0].children.retro.map!(i => i.matches[0]),
                  term = node.children[1];
 
@@ -91,5 +92,7 @@ unittest
     auto expr = parseExpression(`(\m n s z.n (m s) z) (\s z.s (s (s z))) (\s z.s (s z))`);
     while (expr.reduction()) {}
     assert(expr == parseExpression(`\s z.s (s (s (s (s (s z)))))`));
+
+    assert(parseExpression(`\xy.x`) == abstraction("xy", variable("x")));
 }
 
