@@ -294,12 +294,27 @@ unittest
     assert(lm == abstraction("a", abstraction("a", application(variable("y"), variable("z")))), lm.toString());
 }
 
+enum EvaluationStrategy
+{
+    normalOrder,
+    callByName,
+    callByValue
+}
 
-bool reduction(ref Expression lm)
+bool reduction(ref Expression lm, EvaluationStrategy es = EvaluationStrategy.normalOrder)
 {
     return lm.castSwitch!(
             (VarExpression _) => false,
-            (AbstractExpression lm) => lm.term.reduction(),
+            (AbstractExpression lm)
+            {
+                final switch (es)
+                {
+                    case EvaluationStrategy.normalOrder:
+                        return lm.term.reduction(es);
+                    case EvaluationStrategy.callByName, EvaluationStrategy.callByValue:
+                        return false;
+                }
+            },
             (ApplyExpression app)
             {
                 if (auto l = cast(AbstractExpression)app.func)
@@ -309,7 +324,10 @@ bool reduction(ref Expression lm)
                     return true;
                 }
 
-                return app.func.reduction() || app.input.reduction();
+                if (EvaluationStrategy.callByValue)
+                    return app.input.reduction(es) || app.func.reduction(es);
+                else
+                    return app.func.reduction(es) || app.input.reduction(es);
             });
 }
 
@@ -318,5 +336,11 @@ unittest
     Expression lm = application(abstraction("x", abstraction("y", variable("x"))), variable("a"));
     lm.reduction();
     assert(lm == abstraction("y", variable("a")));
+
+    import lambdarepl.parser;
+
+    lm = parseExpression(`(\z.z) ((\z.z) (\z.(\z.z) z))`);
+    while (lm.reduction(EvaluationStrategy.callByName)) {}
+    assert(lm == parseExpression(`\z.(\z.z) z`));
 }
 
