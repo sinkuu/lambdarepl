@@ -1,0 +1,8 @@
+{
+	"name": "lambdarepl",
+	"description": "lambda toy",
+	"authors": ["sinkuu"],
+	"dependencies": {
+		"pegged": "~master"
+	}
+}
