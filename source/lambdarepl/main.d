@@ -29,7 +29,7 @@ void main(string[] args)
             continue;
         }
 
-        writeln("   ", result.expression);
+        writeln("   ", result.expression.toString.stripParen);
 
         auto reductions = result.reductions;
         ulong steps = 200; // TODO: make configuratable

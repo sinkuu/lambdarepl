@@ -75,9 +75,9 @@ private struct Reductions
         return _done;
     }
 
-    Expression front()
+    const(Expression) front() const
     {
-        return _expr.dup;
+        return _expr;
     }
 
     void popFront()

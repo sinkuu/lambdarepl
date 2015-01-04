@@ -15,6 +15,11 @@ abstract class Expression
     {
         assert(0);
     }
+
+    override string toString() const
+    {
+        assert(0);
+    }
 }
 
 
@@ -68,7 +73,7 @@ final class AbstractExpression : Expression
         return false;
     }
 
-    override string toString()
+    override string toString() const
     {
         if (auto lm = cast(AbstractExpression)term)
         {
@@ -135,11 +140,12 @@ final class ApplyExpression : Expression
         return false;
     }
 
-    override string toString()
+    override string toString() const
     {
         auto apps = appender!(ApplyExpression[]);
 
-        auto a = this;
+        import std.typecons : Rebindable;
+        Rebindable!(typeof(this)) a = this;
         while (a)
         {
             apps ~= cast(ApplyExpression)a;
@@ -168,21 +174,22 @@ unittest
 }
 
 
-RedBlackTree!string freeVariables(Expression expr)
+RedBlackTree!string freeVariables(in Expression expr)
 {
-    return expr.castSwitch!(
-        (VarExpression v)
+    // Phobos BUG: castSwitch accepts only mutable Object
+    return (cast()expr).castSwitch!(
+        (in VarExpression v)
         {
             string[1] ar = v.name;
             return redBlackTree(ar);
         },
-        (AbstractExpression lm)
+        (in AbstractExpression lm)
         {
             auto vars = freeVariables(lm.term);
             vars.removeKey(lm.var);
             return vars;
         },
-        (ApplyExpression app)
+        (in ApplyExpression app)
         {
             auto vars = freeVariables(app.func);
             vars.insert(freeVariables(app.input)[]);
