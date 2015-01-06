@@ -25,7 +25,7 @@ void main(string[] args)
 
         if (result.error !is null)
         {
-            writeln(result.error);
+            stderr.writeln(result.error);
             continue;
         }
 

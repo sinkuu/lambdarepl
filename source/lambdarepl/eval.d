@@ -7,7 +7,7 @@ import lambdarepl.parser;
 
 struct Evaluator
 {
-    Expression[string] variables;
+    const(Expression)[string] variables;
 
     EvalResult eval(string s)
     {

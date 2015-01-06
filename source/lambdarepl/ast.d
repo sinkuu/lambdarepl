@@ -243,12 +243,12 @@ unittest
 }
 
 
-void replace(ref Expression lm, string from, Expression to, RedBlackTree!string freevars = null)
+void replace(ref Expression lm, string from, in Expression to, RedBlackTree!string freevars = null)
 {
     lm.castSwitch!(
         (VarExpression var)
         {
-            if (var.name == from) lm = to;
+            if (var.name == from) lm = to.dup;
         },
         (AbstractExpression ab)
         {
