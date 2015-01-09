@@ -180,8 +180,7 @@ RedBlackTree!string freeVariables(in Expression expr)
     return (cast()expr).castSwitch!(
         (in VarExpression v)
         {
-            string[1] ar = v.name;
-            return redBlackTree(ar);
+            return redBlackTree!string(v.name);
         },
         (in AbstractExpression lm)
         {
